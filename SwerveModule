@@ -1,0 +1,41 @@
+package frc.robot.subsystems;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.AnalogInput;
+
+public class SwerveModule {
+    private final CANSParkMax driveMotor;
+    private final CANSparkMax turningMotor;
+
+    private final CANEncoder driveEncoder;
+    private final CANEncoder turningEncoder;
+
+    private final PIDController turningPidController;
+
+    private final AnalogInput absoluteEncoder;
+    private final boolean absoluteEncoderReversed;
+    private final double absoluteEncoderOffsetRad;
+
+    public ServeModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed, int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
+
+        this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
+        this.absoluteEncoderReversed = absoluteEncoderReversed;
+        absoluteEncoder = new AnalogInput(absoluteEncoderId);
+
+        driveMotor = new CANSparkMax(driveMotorId, MotorType.kBrushless);
+        turningMotor = new CANSparkMax(turningMotorId, MotorType.kBrushless);
+
+        driveMotor.setInverted(driveMotorReversed);
+        turningMotor.setInverted(turningMotorReversed);
+
+        driveEncoder = driveMotor.getEncoder();
+        turningEncoder = turningMotor.getEncoder();
+
+        driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);
+        driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
+        turningEncoder.setPositionConversionsFactor(ModuleConstants.kTurningEncoderRot2Rad);
+        turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
+
+        turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
+    }
+}
